@@ -2,22 +2,20 @@
 
 function dimensions(a)
     rows = size(a)[1]
-    cols = size(a[1])[1]
+    cols = size(a)[2]
     return [rows, cols]
 end
 
 function transposer(a)
     dim = dimensions(a)
-    print(a)
-    #this should all work but when I try to create a 2d array it makes this weird matrix thing. I dont understand whats going on >:(
-    b = ones(Int, dim[2], dim[1])
-    print(b)
+    b = zeros(Int64, (dim[2], dim[1]))
+    println(b)
     for i in 1:dim[2]
         for k in 1:dim[1]
-            b[i][k] = a[k][i]
+            b[i, k] = a[k, i]
         end
     end
-    print(b)
+    return b
 end
 
 
@@ -49,9 +47,3 @@ function eigenVectors(a)
     throw("unimplemented")
 end
 
-#testing transposer
-a = [[1,2,3],[4,5,6]]
-
-c = transposer(a)
-
-println(c)
