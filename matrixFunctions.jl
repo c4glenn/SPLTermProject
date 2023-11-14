@@ -18,31 +18,36 @@ function transposer(a)
     return b
 end
 
-
+#braden
 function RREF(a)
     throw("unimplemented")
 end
 
+#Rapha
 function trace(a)
     throw("unimplemented")
 end
 
+#braden
 function determinant(a)
     throw("unimplemented")
 end
 
+#ronni
 function rank(a)
 throw("unimplemented")
 end
 
+#ronni
 function nullality(a)
     throw("unimplemented")
 end
-
+#rapha
 function eigenVals(a)
     throw("unimplemented")
 end
 
+#braden
 function eigenVectors(a)
     throw("unimplemented")
 end
