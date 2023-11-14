@@ -23,12 +23,12 @@ function RREF(a)
     throw("unimplemented")
 end
 
-#Rapha
+#braden
 function trace(a)
     throw("unimplemented")
 end
 
-#braden
+#ronni
 function determinant(a)
     throw("unimplemented")
 end
@@ -47,7 +47,7 @@ function eigenVals(a)
     throw("unimplemented")
 end
 
-#braden
+#Rapha
 function eigenVectors(a)
     throw("unimplemented")
 end
