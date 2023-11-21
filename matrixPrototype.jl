@@ -32,7 +32,6 @@ set_gtk_property!(choose_file_input, :placeholder_text, "File Not Chosen")
 
 
 
-
 set_gtk_property!(container, :column_spacing, 3) 
 showall(window)
 
@@ -48,9 +47,51 @@ function process_image(w)
     img_path = get_gtk_property(choose_file_input, :text, String)
     img = load(img_path)
     res = run_tesseract(img, psm=6)
-    println(res)
+    # \n char means next row and add 1 to dimy
+    # white space means end of string on that row and add 1 to dimx
+    # when string contains a character that is not a number that means negative
+    numbers::Array{Int64} = []
+    dimx::Int64 = 1
+    dimy::Int64 = 0
+    firstLineBroken::Bool = false
+    number::String = ""
+    for char in res
+        
+        if char == '\n'
+            dimy += 1
+            firstLineBroken = true
+            push!(numbers, parse(Int64,number))
+            number = ""
+            continue
+        end
+
+        if char == ' '
+            push!(numbers, parse(Int64, number))
+            number = ""
+            if !firstLineBroken
+                dimx += 1
+                continue
+            end
+        end
+
+        if char != '\n' && char != ' '
+            number = number * char
+        end
+    end
+    matrix = Array{Int64}(undef, dimx, dimy)
+    counter::Int64 = 1
+    for numx in range(1, dimx)
+        for numy in range(1, dimy)
+            matrix[numx, numy] = numbers[counter]
+            counter += 1
+        end
+    end
     set_gtk_property!(matrix_label, :label, res)
 end
+# TODO: create a dictionary of all the values using the matrixfunctions module and return the dictionary
+# function getMatrixValues(matrix)
+#     return Dict("transpose" => , "dimensions" => , "transpose" =>, "RREF" => , "trace" => "determinant" => , "rank" => , "nullality" => , "eigenValues" => , "eigenVectors" => )
+# end
 signal_connect(choose_file, choose_file_button, "clicked")
 signal_connect(process_image, process_image_button, "clicked")
 
