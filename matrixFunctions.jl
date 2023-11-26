@@ -36,7 +36,11 @@ module matrixFunctions
     #ronni
     function determinant(a)
         # throw("unimplemented")
-        return LinearAlgebra.det(a)
+        try
+            return LinearAlgebra.det(a)
+        catch
+            return "Matrix not square :("
+        end
     end
 
     #ronni
@@ -48,18 +52,26 @@ module matrixFunctions
     #ronni
     function nullality(a)
         # throw("unimplemented")
-        return nothing
+        return size(a)[2] - rank(a)
     end
     #rapha
     function eigenVals(a)
         # throw("unimplemented")
-        return LinearAlgebra.eigen(a).values
+        try
+            return LinearAlgebra.eigen(a).values
+        catch
+            return "Matrix not square :("
+        end
     end
 
     #Rapha
     function eigenVectors(a)
         # throw("unimplemented")
-        return LinearAlgebra.eigen(a).vectors
+        try
+            return LinearAlgebra.eigen(a).vectors
+        catch
+            return "Matrix not square :("
+        end
     end
 
 end

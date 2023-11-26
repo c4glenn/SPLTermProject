@@ -34,7 +34,7 @@ selected_image = GtkImage("")
 generate_hm_button = GtkButton("Generate Heatmap")
 
 # Text label for the matrix that is derived from processing the image
-matrix_label = GtkLabel("")
+
 
 # Adding the widgets to the container using the grid coordinates
 container[1,1] = path_label
@@ -42,8 +42,38 @@ container[2,1] = choose_file_input
 container[3,1] = choose_file_button
 container[2,2] = selected_image
 container[2,3] = process_image_button
-container[2,5] = matrix_label
 container[3,5] = generate_hm_button 
+# matrix values
+container[1,5] = GtkLabel("Matrix: ")
+container[1,6] = GtkLabel("Dimensions: ")
+container[1,7] = GtkLabel("Transpose: ")
+container[1,8] = GtkLabel("RREF: ")
+container[1,9] = GtkLabel("Trace: ")
+container[1,10] = GtkLabel("Determinant: ")
+container[1,11] = GtkLabel("Rank: ")
+container[1,12] = GtkLabel("Nullity: ")
+container[1,13] = GtkLabel("Eigen Values: ")
+container[1,14] = GtkLabel("Eigen Vectors: ")
+matrix_label = GtkLabel("")
+dimension_label = GtkLabel("")
+transpose_label = GtkLabel("")
+rref_label = GtkLabel("")
+trace_label = GtkLabel("")
+determinant_label = GtkLabel("")
+rank_label = GtkLabel("")
+nullity_label = GtkLabel("")
+eigenValues_label = GtkLabel("")
+eigenVectors_label = GtkLabel("")
+container[2,5] = matrix_label
+container[2,6] = dimension_label
+container[2,7] = transpose_label
+container[2,8] = rref_label
+container[2,9] = trace_label
+container[2,10] = determinant_label
+container[2,11] = rank_label
+container[2,12] = nullity_label
+container[2,13] = eigenValues_label
+container[2,14] = eigenVectors_label
 
 # Placeholder text for the file text input widget
 set_gtk_property!(choose_file_input, :placeholder_text, "File Not Chosen")
@@ -74,8 +104,10 @@ function process_image(w)
     img_path = get_gtk_property(choose_file_input, :text, String)
     img = load(img_path)
     res = run_tesseract(img, psm=6)
-    set_gtk_property!(matrix_label, :label, res)
     set_gtk_property!(generate_hm_button, :visible, true)
+    
+    matrix_dict = get_matrix_values(text_to_matrix(res))
+    display_matrix_values(matrix_dict)
 end
 
 # Function that returns the values associated with a matrix in a dictionary
@@ -88,11 +120,10 @@ function get_matrix_values(matrix)
         "trace" => matrixFunctions.trace(matrix),
         "determinant" => matrixFunctions.determinant(matrix),
         "rank" => matrixFunctions.rank(matrix), 
-        "nullality" => matrixFunctions.nullality(matrix), 
+        "nullity" => matrixFunctions.nullality(matrix), 
         "eigenValues" => matrixFunctions.eigenVals(matrix), 
         "eigenVectors" => matrixFunctions.eigenVectors(matrix))
 end
-
 # Function that takes text from the matrix_label widget and converts it to a multidimensional array
 function text_to_matrix(text)
     # \n char means next row and add 1 to dimy
@@ -136,9 +167,26 @@ function text_to_matrix(text)
     return matrix
 end
 
+function matrix_to_text(matrix)
+    text = ""
+    dimx = matrixFunctions.dimensions(matrix)[1]
+    dimy = matrixFunctions.dimensions(matrix)[2]
+    for x in range(1, dimx)
+        for y in range(1, dimy)
+            if y == 1
+                text = string(text, matrix[x, y])
+                continue
+            end
+            text = string(text, " ", matrix[x, y])
+        end
+        text = string(text, "\n")
+    end
+    return text
+end
+
 # Function to create heatmap of current loaded matrix
 function create_heatmap(w)
-    mat = matrixFunctions.transposer(text_to_matrix(get_gtk_property(matrix_label, :label, String)))
+    mat = matrixFunctions.transposer(text_to_matrix(get_gtk_property(container[2,5], :label, String)))
     dims = matrixFunctions.dimensions(mat)
     halfmax = maximum(mat)/2
     f = CairoMakie.Figure(resolution =(600, 600))
@@ -148,7 +196,6 @@ function create_heatmap(w)
     ax.xlabelvisible = false
     h = CairoMakie.heatmap!(ax, mat)
     CairoMakie.Colorbar(f[1, 2], h)
-
     for x in 1:dims[1], y in 1:dims[2]
         txtcolor = mat[x, y] < halfmax ? :white : :black
         CairoMakie.text!(ax, string.(mat[x, y]), position = Point2f(x, y),
@@ -156,6 +203,28 @@ function create_heatmap(w)
     end
     CairoMakie.display(f)
 
+end
+
+function display_matrix_values(values)
+    # dimension_label = string(values["dimensions"])
+    # transpose_label= string(matrix_to_text(values["transpose"]))
+    # rref_label = string(values["RREF"])
+    # trace_label = string(values["trace"])
+    # determinant_label = string(values["determinant"])
+    # rank_label = string(values["rank"])
+    # nullity_label= string(values["nullity"])
+    # eigenValues_label = string(values["eigenValues"])
+    # eigenVectors_label = string(values["eigenVectors"])
+    set_gtk_property!(matrix_label, :label, string(matrix_to_text(values["matrix"])))
+    set_gtk_property!(dimension_label, :label, string("rows=", values["dimensions"][1], " | columns=", values["dimensions"][2]))
+    set_gtk_property!(transpose_label, :label, string(matrix_to_text(values["transpose"])))
+    set_gtk_property!(rref_label, :label, string(values["RREF"]))
+    set_gtk_property!(trace_label, :label, string(values["trace"]))
+    set_gtk_property!(determinant_label, :label, string(values["determinant"]))
+    set_gtk_property!(rank_label, :label, string(values["rank"]))
+    set_gtk_property!(nullity_label, :label, string(values["nullity"]))
+    set_gtk_property!(eigenValues_label, :label, string(values["eigenValues"]))
+    set_gtk_property!(eigenVectors_label, :label, string(values["eigenVectors"]))
 end
 
 signal_connect(choose_file, choose_file_button, "clicked")
