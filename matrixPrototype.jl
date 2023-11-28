@@ -206,16 +206,17 @@ function create_heatmap(w)
 end
 
 function display_matrix_values(values)
+    println(values["matrix"])
     set_gtk_property!(matrix_label, :label, string(matrix_to_text(values["matrix"])))
     set_gtk_property!(dimension_label, :label, string("rows=", values["dimensions"][1], " | columns=", values["dimensions"][2]))
     set_gtk_property!(transpose_label, :label, string(matrix_to_text(values["transpose"])))
-    set_gtk_property!(rref_label, :label, string(values["RREF"]))
+    set_gtk_property!(rref_label, :label, string(matrix_to_text(values["RREF"])))
     set_gtk_property!(trace_label, :label, string(values["trace"]))
     set_gtk_property!(determinant_label, :label, string(values["determinant"]))
     set_gtk_property!(rank_label, :label, string(values["rank"]))
     set_gtk_property!(nullity_label, :label, string(values["nullity"]))
     set_gtk_property!(eigenValues_label, :label, string(values["eigenValues"]))
-    set_gtk_property!(eigenVectors_label, :label, string(values["eigenVectors"]))
+    set_gtk_property!(eigenVectors_label, :label, string(matrix_to_text(values["eigenVectors"])))
 end
 
 signal_connect(choose_file, choose_file_button, "clicked")

@@ -23,14 +23,35 @@ module matrixFunctions
 
     #braden
     function RREF(a)
-        # throw("unimplemented")
-        return nothing
+        m,n=size(a)
+        mat = convert(Matrix{Float64}, a)
+        for i=1:m
+            if mat[i,i] == 0
+                continue
+            end 
+            mat[i,:]=mat[i,:]/mat[i,i]; 
+            for j=1:m 
+                if j==i; continue; 
+                end
+            mat[j,:]=mat[j,:]-mat[j,i]*mat[i,:]
+            end 
+        end
+        sol=mat
+
+        return sol
     end
 
     #braden
     function trace(a)
-        # throw("unimplemented")
-        return nothing
+        row, col = dimensions(a)
+        if(row != col)
+            return "Matrix not square :("
+        end
+        total = 0
+        for i in range(1, row)
+            total += a[i, i]
+        end
+        return total
     end
 
     #ronni
